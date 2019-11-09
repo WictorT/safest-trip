@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from "react-dom";
 import logo from './logo.svg';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -48,6 +49,7 @@ class App extends React.Component {
     };
 
     this.handleUpdateDistance = this.handleUpdateDistance.bind(this);
+    this.handleSubmitDistanceOnEnter = this.handleSubmitDistanceOnEnter.bind(this);
     this.handleSubmitDistance = this.handleSubmitDistance.bind(this);
     this.updateResults = this.updateResults.bind(this);
   }
@@ -56,11 +58,21 @@ class App extends React.Component {
     this.setState({distance: event.target.value});
   }
 
+  handleSubmitDistanceOnEnter(e) {
+    if (e.key === 'Enter') {
+      this.handleSubmitDistance();
+    }
+  }
+
   handleSubmitDistance() {
     if (this.state.distance < 1) {
       return
     }
+
     this.updateResults(this.state.distance);
+
+    console.log(this.refs.Results);
+
     this.setState({
       showResults: true,
       lastSubmittedDistance: this.state.distance
@@ -87,16 +99,16 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
+        <h1> Safest-Trip.com </h1>
         <header> Choose the safest transportation method for your dream trip </header>
         <br/>
-        <form action={'#'}>
-          <label><strong> What is the distance you want to travel? </strong></label><br/>
-          <input type={"number"} min={1} value={this.state.distance} onChange={this.handleUpdateDistance}/> km<br/> <br/>
-          <button type={"submit"} onClick={this.handleSubmitDistance}> Calculate </button> <br/> <br/>
-        </form>
+        <label><strong> What is the distance you want to travel? </strong></label><br/>
+        <input type={"number"} min={1} value={this.state.distance} onChange={this.handleUpdateDistance} onKeyDown={this.handleSubmitDistanceOnEnter} /> km<br/> <br/>
+        <button type={"submit"} onClick={this.handleSubmitDistance}>  Calculate </button> <br/> <br/>
 
-        {this.state.showResults &&
-        <div>
+        {
+          this.state.showResults &&
+        <div className="results" ref="Results">
           <p>
             The safest transportation method for your <strong>{this.state.lastSubmittedDistance}km</strong> trip would be the <strong className={"green"}>{this.state.results[0].type}</strong>. <br/>
             It is {(this.state.results[1].risk / this.state.results[0].risk).toFixed(2)} times safer than the <strong className={"yellow"}>{this.state.results[1].type}</strong>, <br/>
@@ -111,7 +123,7 @@ class App extends React.Component {
                 {
                   this.state.results.map((result) => {
                     return (
-                      <th> Safer than {result.type} by  </th>
+                      <th> Safer than {result.type} by </th>
                     )
                   })
                 }

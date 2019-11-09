@@ -2,7 +2,6 @@
   text-align: center;
   margin-left: auto;
   margin-right: auto;
-  background-color: lightgrey;
   max-width: 900px;
   border: 1px solid;
 }
@@ -37,4 +36,13 @@
 .yellow {
   color: yellow;
   background-color: green;
+}
+
+.fadeOut{
+  opacity:0;
+  display: none;
+}
+.fadeIn{
+  opacity:1;
+  transition: width 0.5s, height 0.5s, opacity 0.5s 0.5s;
 }
