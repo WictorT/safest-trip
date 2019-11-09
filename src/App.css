@@ -1,5 +1,10 @@
 .App {
   text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: lightgrey;
+  max-width: 900px;
+  border: 1px solid;
 }
 
 .App-logo {
@@ -23,4 +28,13 @@
 
 .red {
   color: red;
+}
+
+.green {
+  color: green;
+}
+
+.yellow {
+  color: yellow;
+  background-color: green;
 }

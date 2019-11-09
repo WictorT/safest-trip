@@ -8,7 +8,9 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      distance: 1000,
+      distance: 0,
+      lastSubmittedDistance: 0,
+      showResults: false,
       results: [
         {
           type: 'Car',
@@ -46,14 +48,23 @@ class App extends React.Component {
     };
 
     this.handleUpdateDistance = this.handleUpdateDistance.bind(this);
+    this.handleSubmitDistance = this.handleSubmitDistance.bind(this);
     this.updateResults = this.updateResults.bind(this);
-
-    this.updateResults(this.state.distance);
   }
 
   handleUpdateDistance(event) {
     this.setState({distance: event.target.value});
-    this.updateResults(event.target.value);
+  }
+
+  handleSubmitDistance() {
+    if (this.state.distance < 1) {
+      return
+    }
+    this.updateResults(this.state.distance);
+    this.setState({
+      showResults: true,
+      lastSubmittedDistance: this.state.distance
+    });
   }
 
   updateResults(distance) {
@@ -76,47 +87,61 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <header> Chance of dying in an accident ordered from safest to most dangerous</header>
+        <header> Choose the safest transportation method for your dream trip </header>
         <br/>
-        <label> Distance: </label>
-        <input type={"number"} value={this.state.distance} onChange={this.handleUpdateDistance}/> km<br/>
+        <form action={'#'}>
+          <label><strong> What is the distance you want to travel? </strong></label><br/>
+          <input type={"number"} min={1} value={this.state.distance} onChange={this.handleUpdateDistance}/> km<br/> <br/>
+          <button type={"submit"} onClick={this.handleSubmitDistance}> Calculate </button> <br/> <br/>
+        </form>
 
-        <table border={'1px'}>
-          <tr>
-            <th>Type</th>
-            <th>Probability</th>
-            {
-              this.state.results.map((result) => {
-                return (
-                  <th> Safer than {result.type}</th>
-                )
-              })
-            }
-          </tr>
+        {this.state.showResults &&
+        <div>
+          <p>
+            The safest transportation method for your <strong>{this.state.lastSubmittedDistance}km</strong> trip would be the <strong className={"green"}>{this.state.results[0].type}</strong>. <br/>
+            It is {(this.state.results[1].risk / this.state.results[0].risk).toFixed(2)} times safer than the <strong className={"yellow"}>{this.state.results[1].type}</strong>, <br/>
+            and {(this.state.results[2].risk / this.state.results[0].risk).toFixed(2)} times safer than the <strong className={"yellow"}>{this.state.results[2].type}</strong>. <br/>
+          While the <strong className={"red"}>{this.state.results[3].type}</strong> is the most dangerous transportation for this trip, making it {(this.state.results[3].risk / this.state.results[0].risk).toFixed(2)} times more dangerous than the <strong className={"green"}>{this.state.results[0].type}</strong>.
+          </p>
 
-          {
-            this.state.results.map((result) => {
-              return (
-                <tr>
-                  <td>{result.type}</td>
-                  <td>{result.risk}%</td>
+          <table align={"center"} border={'1px'}>
+              <tr>
+                <th>Type</th>
+                <th> Probability of a fatal crash </th>
+                {
+                  this.state.results.map((result) => {
+                    return (
+                      <th> Safer than {result.type} by  </th>
+                    )
+                  })
+                }
+              </tr>
 
-                  {
-                    this.state.results.map((comparedResult) => {
-                      if (comparedResult === result) {
-                        return (<td>X</td>)
-                      } else {
-                        return (
-                          <td> {(comparedResult.risk / result.risk).toFixed(2)} times </td>
-                        )
+              {
+                this.state.results.map((result) => {
+                  return (
+                    <tr>
+                      <td>{result.type}</td>
+                      <td>{result.risk}%</td>
+
+                      {
+                        this.state.results.map((comparedResult) => {
+                          if (comparedResult === result) {
+                            return (<td>X</td>)
+                          } else {
+                            return (
+                              <td> {(comparedResult.risk / result.risk).toFixed(2)} times </td>
+                            )
+                          }
+                        })
                       }
-                    })
-                  }
-                </tr>
-              )
-            })
-          }
-        </table>
+                    </tr>
+                  )
+                })
+              }
+            </table>
+        </div>
+        }
 
 
         {/*<div className={'container'}>*/}
