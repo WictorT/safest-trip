@@ -71,8 +71,6 @@ class App extends React.Component {
 
     this.updateResults(this.state.distance);
 
-    console.log(this.refs.Results);
-
     this.setState({
       showResults: true,
       lastSubmittedDistance: this.state.distance
@@ -85,8 +83,8 @@ class App extends React.Component {
     results.forEach((result) => {
       result.risk =
         ((result.distanceQuotient * distance / 1e+9)
-        + (result.timeQuotient * (distance / result.averageSpeed) / 1e+9)
-        + result.journeyRisk).toFixed(9);
+          + (result.timeQuotient * (distance / result.averageSpeed) / 1e+9)
+          + result.journeyRisk).toFixed(9);
     });
 
     results = results.sort((a, b) => {
@@ -99,75 +97,103 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <h1> Safest-Trip.com </h1>
-        <header> Choose the safest transportation method for your dream trip </header>
-        <br/>
-        <label><strong> What is the distance you want to travel? </strong></label><br/>
-        <input type={"number"} min={1} value={this.state.distance} onChange={this.handleUpdateDistance} onKeyDown={this.handleSubmitDistanceOnEnter} /> km<br/> <br/>
-        <button type={"submit"} onClick={this.handleSubmitDistance}>  Calculate </button> <br/> <br/>
 
-        {
-          this.state.showResults &&
-        <div className="results" ref="Results">
-          <p>
-            The safest transportation method for your <strong>{this.state.lastSubmittedDistance}km</strong> trip would be the <strong className={"green"}>{this.state.results[0].type}</strong>. <br/>
-            It is {(this.state.results[1].risk / this.state.results[0].risk).toFixed(2)} times safer than the <strong className={"yellow"}>{this.state.results[1].type}</strong>, <br/>
-            and {(this.state.results[2].risk / this.state.results[0].risk).toFixed(2)} times safer than the <strong className={"yellow"}>{this.state.results[2].type}</strong>. <br/>
-          While the <strong className={"red"}>{this.state.results[3].type}</strong> is the most dangerous transportation for this trip, making it {(this.state.results[3].risk / this.state.results[0].risk).toFixed(2)} times more dangerous than the <strong className={"green"}>{this.state.results[0].type}</strong>.
-          </p>
+        <nav className="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+          <a className="navbar-brand" href="#">SafestTrip</a>
+          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+                  aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+          </button>
 
-          <table align={"center"} border={'1px'}>
-              <tr>
-                <th>Type</th>
-                <th> Probability of a fatal crash </th>
-                {
-                  this.state.results.map((result) => {
-                    return (
-                      <th> Safer than {result.type} by </th>
-                    )
-                  })
-                }
-              </tr>
+          <div className="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul className="navbar-nav mr-auto">
+              <li className="nav-item active">
+                <a className="nav-link" href="#">Home <span className="sr-only">(current)</span></a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="#">Blog</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
 
-              {
-                this.state.results.map((result) => {
-                  return (
+        <main role="main" className="container content">
+          <h1> The safest transportation method for your dream trip</h1>
+          <p className="lead"> What is the distance you want to travel? </p>
+
+          <div className="input-group p-2">
+            <input type="number" className="form-control" min={1} onChange={this.handleUpdateDistance}
+                   onKeyDown={this.handleSubmitDistanceOnEnter}/>
+            <div className="input-group-append">
+              <span className="input-group-text">km</span>
+            </div>
+          </div>
+          <button type={"button"} className="btn btn-primary p-2" onClick={this.handleSubmitDistance}>Calculate</button>
+
+          {
+            // this.state.showResults &&
+            <div className={this.state.showResults ? 'fadeIn' : 'fadeOut'}>
+              <div className={"results"} ref="Results">
+                <p>
+                  The safest transportation method for your <strong>{this.state.lastSubmittedDistance}km</strong> trip
+                  would be the <strong className={"green"}>{this.state.results[0].type}</strong>. <br/>
+                  It is {(this.state.results[1].risk / this.state.results[0].risk).toFixed(2)} times safer than
+                  the <strong className={"yellow"}>{this.state.results[1].type}</strong>, <br/>
+                  and {(this.state.results[2].risk / this.state.results[0].risk).toFixed(2)} times safer than
+                  the <strong
+                  className={"yellow"}>{this.state.results[2].type}</strong>. <br/>
+                  While the <strong className={"red"}>{this.state.results[3].type}</strong> is the most dangerous
+                  transportation for this trip, making
+                  it {(this.state.results[3].risk / this.state.results[0].risk).toFixed(2)} times more dangerous than
+                  the <strong className={"green"}>{this.state.results[0].type}</strong>.
+                </p>
+
+                <button className="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample"
+                        aria-expanded="false" aria-controls="collapseExample">
+                  Advanced
+                </button>
+                <div className="collapse" id="collapseExample">
+                  <table className={"table"}>
                     <tr>
-                      <td>{result.type}</td>
-                      <td>{result.risk}%</td>
-
+                      <th>Transport</th>
+                      <th> Probability of a fatal crash</th>
                       {
-                        this.state.results.map((comparedResult) => {
-                          if (comparedResult === result) {
-                            return (<td>X</td>)
-                          } else {
-                            return (
-                              <td> {(comparedResult.risk / result.risk).toFixed(2)} times </td>
-                            )
-                          }
+                        this.state.results.map((result) => {
+                          return (
+                            <th> Safer than {result.type} by </th>
+                          )
                         })
                       }
                     </tr>
-                  )
-                })
-              }
-            </table>
-        </div>
-        }
 
+                    {
+                      this.state.results.map((result) => {
+                        return (
+                          <tr>
+                            <td>{result.type}</td>
+                            <td>{result.risk}%</td>
 
-        {/*<div className={'container'}>*/}
-        {/*  {*/}
-        {/*    this.state.results.map((result) => {*/}
-        {/*      return (*/}
-        {/*        <div className={'row'}>*/}
-        {/*          <div className={'col'}>{result.type}</div>*/}
-        {/*          <div className={'col'}>{result.risk}%</div>*/}
-        {/*        </div>*/}
-        {/*      )*/}
-        {/*    })*/}
-        {/*  }*/}
-        {/*</div>*/}
+                            {
+                              this.state.results.map((comparedResult) => {
+                                if (comparedResult === result) {
+                                  return (<td>X</td>)
+                                } else {
+                                  return (
+                                    <td> {(comparedResult.risk / result.risk).toFixed(2)} times </td>
+                                  )
+                                }
+                              })
+                            }
+                          </tr>
+                        )
+                      })
+                    }
+                  </table>
+                </div>
+              </div>
+            </div>
+          }
+        </main>
       </div>
     );
   }
