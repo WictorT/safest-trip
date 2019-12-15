@@ -1,6 +1,4 @@
 import React from 'react';
-import ReactDOM from "react-dom";
-import logo from './logo.svg';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -157,33 +155,14 @@ class App extends React.Component {
                     <tr>
                       <th>Transport</th>
                       <th> Probability of a fatal crash</th>
-                      {
-                        this.state.results.map((result) => {
-                          return (
-                            <th> Safer than {result.type} by </th>
-                          )
-                        })
-                      }
                     </tr>
 
                     {
-                      this.state.results.map((result) => {
+                      this.state.results.map((result, key, results) => {
                         return (
                           <tr>
                             <td>{result.type}</td>
-                            <td>{result.risk}%</td>
-
-                            {
-                              this.state.results.map((comparedResult) => {
-                                if (comparedResult === result) {
-                                  return (<td>X</td>)
-                                } else {
-                                  return (
-                                    <td> {(comparedResult.risk / result.risk).toFixed(2)} times </td>
-                                  )
-                                }
-                              })
-                            }
+                            <td>{result.risk}% {key ? <strong className={"red"}> {(result.risk / results[key - 1].risk).toFixed(2)} times worse</strong> : ""} </td>
                           </tr>
                         )
                       })
